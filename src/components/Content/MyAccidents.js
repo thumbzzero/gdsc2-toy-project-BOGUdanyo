@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
-import { useEffect } from 'react';
 import { customAxios } from './../../hooks/customAxios';
 import useDidMountEffect from './../../hooks/useDidMouontEffect';
 import Map from './Map';
@@ -8,6 +6,7 @@ import Map from './Map';
 const MyAccidents = () => {
 	const [lat, setLat] = useState(-3.745);
 	const [lng, setLng] = useState(38.523);
+	const [places, setPlaces] = useState([]);
 	
 	if (navigator.geolocation) {
 		navigator.geolocation.getCurrentPosition(function(position) {
@@ -25,20 +24,19 @@ const MyAccidents = () => {
 	}
 
 	useDidMountEffect(() => {
-		console.log(lat, ' ', lng);
 		customAxios.get("myAccidents/", {
 			params: {
 				startLat: lat,
 				startLon: lng
 			}
 		}).then((response) => {
-			console.log(response.data);
+			setPlaces(response.data);
 		})
 	}, [lat, lng]);
 
 	return (
 		<div className='container'>
-			<Map lat={lat} lng={lng} />
+			<Map lat={lat} lng={lng} places={places} menu={"ma"} />
 		</div>
 	);
 };

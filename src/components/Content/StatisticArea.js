@@ -1,16 +1,13 @@
-import { GoogleMap } from "@react-google-maps/api";
 import React, { useRef, useState } from "react";
 import { customAxios } from "./../../hooks/customAxios";
 import Map from "./Map";
 
-const containerStyle = {
-  width: "70%",
-  height: "500px",
-};
-
 const StatisticArea = () => {
-  const [accidents, setAccidents] = useState([]);
-  const [searched, setSearched] = useState(false);
+  const [searched, setSearched] = useState(0);
+
+  const [lat, setLat] = useState(-3.745);
+	const [lng, setLng] = useState(38.523);
+	const [places, setPlaces] = useState([]);
 
   const regionRef = useRef();
 
@@ -28,8 +25,14 @@ const StatisticArea = () => {
         },
       })
       .then((response) => {
-        setAccidents(response.data);
-        setSearched(true);
+        setPlaces(response.data);
+        if (response.data.length === 0) {
+          setSearched(2);
+        } else {
+          setLat(response.data[0].lat);
+          setLng(response.data[0].lon);
+          setSearched(1);
+        }
       });
   };
 
@@ -43,20 +46,25 @@ const StatisticArea = () => {
         />
         <button className="st-search">검색</button>
       </form>
-      <div className="map-container"></div>
+      <div className="result-container">
+      <div className="map-container">
+        {searched === 1 ? (
+          <Map lat={lat} lng={lng} places={places} menu={"sa"} />
+        ) : null}
+      </div>
       <div className="table-container">
-        {searched ? (
-          accidents.length === 0 ? (
+        {searched !== 0 ? (
+          places.length === 0 ? (
             "검색 결과가 없습니다."
           ) : (
-            <table>
-              <tbody>
+            <table className="table">
+              <tbody style={{backgroundColor: '#d3d3d350'}}>
                 <tr>
                   <th>순위</th>
                   <th>주소</th>
                 </tr>
               </tbody>
-              {accidents.map((accident, index) => {
+              {places.map((accident, index) => {
                 return (
                   <tbody key={accident.id}>
                     <tr>
@@ -71,6 +79,7 @@ const StatisticArea = () => {
         ) : null}
         {}
       </div>
+    </div>
     </div>
   );
 };
