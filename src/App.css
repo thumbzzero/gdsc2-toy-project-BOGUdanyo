@@ -116,5 +116,10 @@ th, td {
 		font-size: 1rem;
 		margin: 0.7rem;
 	}
-
+	.result-container {
+		display: block;
+	}
+	.table-container {
+		margin-top: 15px;
+	}
 }
